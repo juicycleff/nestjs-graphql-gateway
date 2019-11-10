@@ -16,9 +16,7 @@ export class GraphQLTypesLoader {
 
     const types = await this.getTypesFromPaths(paths);
     const flatTypes = flatten(types);
-    // Temporary workaround: https://github.com/okgrow/merge-graphql-schemas/issues/155
-    const tempType = 'type Query { temp__: Boolean }';
-    return mergeTypes([...flatTypes, tempType], { all: true }) as any;
+    return mergeTypes(flatTypes, { all: true }) as any;
   }
 
   public async getTypesFromPaths(paths: string | string[]): Promise<string[]> {
