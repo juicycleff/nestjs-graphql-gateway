@@ -125,12 +125,13 @@ export class GraphqlDistributedModule implements OnModuleInit {
       return;
     }
 
-    const {
-      typePaths,
-    } = this.options;
-
     // @ts-ignore
-    const typeDefs = await this.graphqlTypesLoader.getTypesFromPaths(typePaths);
+    // const typeDefs = await this.graphqlTypesLoader.getTypesFromPaths(typePaths);
+
+    const typeDefs =
+      (await this.graphqlTypesLoader.mergeTypesByPaths(
+        this.options.typePaths,
+      )) || [];
 
     const mergedTypeDefs = extend(typeDefs, this.options.typeDefs);
     const apolloOptions = await this.graphqlDistributedFactory.mergeOptions({
@@ -233,5 +234,13 @@ export class GraphqlDistributedModule implements OnModuleInit {
     this.apolloServer = apolloServer;
   }
 
+  /* private getNormalizedPath(apolloOptions: GqlModuleOptions): string {
+    const prefix = this.applicationConfig.getGlobalPrefix();
+    const useGlobalPrefix = prefix && this.options.useGlobalPrefix;
+    const gqlOptionsPath = normalizeRoutePath(apolloOptions.path);
+    return useGlobalPrefix
+      ? normalizeRoutePath(prefix) + gqlOptionsPath
+      : gqlOptionsPath;
+  } */
 
 }
