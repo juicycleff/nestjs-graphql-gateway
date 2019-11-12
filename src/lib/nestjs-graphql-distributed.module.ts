@@ -5,7 +5,6 @@ import { HttpAdapterHost } from '@nestjs/core';
 import { MetadataScanner } from '@nestjs/core/metadata-scanner';
 import {
   GqlModuleAsyncOptions,
-  GqlModuleOptions,
   GqlOptionsFactory,
   GraphQLAstExplorer,
   GraphQLFactory,
@@ -22,6 +21,7 @@ import { ApolloServerBase } from 'apollo-server-core';
 
 import { GraphqlDistributedFactory } from './graphql-distributed.factory';
 import { GraphQLTypesLoader } from './graphql-types.loader';
+import { DistributedModuleOptions } from './interfaces/distributed-options.interface';
 import { ReferencesExplorerService } from './services';
 
 @Module({
@@ -40,7 +40,7 @@ import { ReferencesExplorerService } from './services';
   exports: [GraphQLTypesLoader, GraphQLAstExplorer],
 })
 export class GraphqlDistributedModule implements OnModuleInit {
-  public static forRoot(options: GqlModuleOptions = {}): DynamicModule {
+  public static forRoot(options: DistributedModuleOptions = {}): DynamicModule {
     options = mergeDefaults(options);
     return {
       module: GraphqlDistributedModule,
@@ -109,7 +109,7 @@ export class GraphqlDistributedModule implements OnModuleInit {
     @Optional()
     private readonly httpAdapterHost: HttpAdapterHost,
     @Inject(GRAPHQL_MODULE_OPTIONS)
-    private readonly options: GqlModuleOptions,
+    private readonly options: DistributedModuleOptions,
     private readonly graphqlFactory: GraphQLFactory,
     private readonly graphqlDistributedFactory: GraphqlDistributedFactory,
     private readonly graphqlTypesLoader: GraphQLTypesLoader,
@@ -124,9 +124,6 @@ export class GraphqlDistributedModule implements OnModuleInit {
     if (!httpAdapter) {
       return;
     }
-
-    // @ts-ignore
-    // const typeDefs = await this.graphqlTypesLoader.getTypesFromPaths(typePaths);
 
     const typeDefs =
       (await this.graphqlTypesLoader.mergeTypesByPaths(
@@ -234,7 +231,7 @@ export class GraphqlDistributedModule implements OnModuleInit {
     this.apolloServer = apolloServer;
   }
 
-  /* private getNormalizedPath(apolloOptions: GqlModuleOptions): string {
+  /* private getNormalizedPath(apolloOptions: DistributedModuleOptions): string {
     const prefix = this.applicationConfig.getGlobalPrefix();
     const useGlobalPrefix = prefix && this.options.useGlobalPrefix;
     const gqlOptionsPath = normalizeRoutePath(apolloOptions.path);
