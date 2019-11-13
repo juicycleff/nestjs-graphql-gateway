@@ -2,7 +2,6 @@
 import federationDirectives from '@apollo/federation/dist/directives';
 import { Injectable } from '@nestjs/common';
 import { loadPackage } from '@nestjs/common/utils/load-package.util';
-import { addResolversToSchema, GraphQLResolverMap } from 'apollo-graphql';
 import { ScalarsExplorerService } from '@nestjs/graphql/dist/services/scalars-explorer.service';
 import { GraphQLSchema, specifiedDirectives } from 'graphql';
 import { BuildSchemaOptions } from './external/type-graphql.types';
@@ -18,7 +17,6 @@ export class GraphQLSchemaBuilder {
     autoSchemaFile: string | boolean,
     options: Omit<BuildSchemaOptions, 'skipCheck'>,
     resolvers: Function[],
-    referenceResolvers?: GraphQLResolverMap<any>,
   ): Promise<any> {
     lazyMetadataStorage.load();
 
@@ -26,7 +24,7 @@ export class GraphQLSchemaBuilder {
     const scalarsMap = this.scalarsExplorerService.getScalarsMap();
     try {
 
-      const federatedSchema = await buildSchema({
+      return await buildSchema({
         ...options,
         directives: [...specifiedDirectives, ...federationDirectives, ...(options.directives || [])],
         emitSchemaFile: autoSchemaFile !== true ? autoSchemaFile : false,
@@ -35,12 +33,6 @@ export class GraphQLSchemaBuilder {
         resolvers,
         skipCheck: true,
       });
-
-      if (referenceResolvers) {
-        addResolversToSchema(federatedSchema, referenceResolvers);
-      }
-
-      return federatedSchema;
     } catch (err) {
       if (err && err.details) {
         // tslint:disable-next-line:no-console

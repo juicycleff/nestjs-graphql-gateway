@@ -72,8 +72,6 @@ import { GraphqlDistributedGatewayModule } from 'nestjs-graphql-gateway';
 export class AppModule {}
 ```
 
-## Credits: Thanks to [@marcus-sa](https://github.com/marcus-sa) for getting this work
-
 ## License
 
 This project is [MIT licensed](LICENSE).

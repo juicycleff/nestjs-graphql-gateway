@@ -3,6 +3,7 @@ import { DynamicModule, Inject, Module, OnModuleInit, Optional, Provider } from 
 import { loadPackage } from '@nestjs/common/utils/load-package.util';
 import { HttpAdapterHost } from '@nestjs/core';
 import { MetadataScanner } from '@nestjs/core/metadata-scanner';
+import { GqlModuleOptions } from '@nestjs/graphql';
 import {
   GqlModuleAsyncOptions,
   GqlOptionsFactory,
@@ -21,7 +22,6 @@ import { ApolloServerBase } from 'apollo-server-core';
 
 import { GraphqlDistributedFactory } from './graphql-distributed.factory';
 import { GraphQLTypesLoader } from './graphql-types.loader';
-import { DistributedModuleOptions } from './interfaces/distributed-options.interface';
 import { ReferencesExplorerService } from './services';
 
 @Module({
@@ -40,7 +40,7 @@ import { ReferencesExplorerService } from './services';
   exports: [GraphQLTypesLoader, GraphQLAstExplorer],
 })
 export class GraphqlDistributedModule implements OnModuleInit {
-  public static forRoot(options: DistributedModuleOptions = {}): DynamicModule {
+  public static forRoot(options: GqlModuleOptions = {}): DynamicModule {
     options = mergeDefaults(options);
     return {
       module: GraphqlDistributedModule,
@@ -109,7 +109,7 @@ export class GraphqlDistributedModule implements OnModuleInit {
     @Optional()
     private readonly httpAdapterHost: HttpAdapterHost,
     @Inject(GRAPHQL_MODULE_OPTIONS)
-    private readonly options: DistributedModuleOptions,
+    private readonly options: GqlModuleOptions,
     private readonly graphqlFactory: GraphQLFactory,
     private readonly graphqlDistributedFactory: GraphqlDistributedFactory,
     private readonly graphqlTypesLoader: GraphQLTypesLoader,
