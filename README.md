@@ -1,5 +1,5 @@
 <h1 align="center">
-NestJs GraphQL Gateway
+NestJs GraphQL Gateway (supports type-graphql)
 </h1>
   
 <p align="center">

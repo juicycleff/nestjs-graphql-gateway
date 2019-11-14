@@ -138,8 +138,6 @@ export class GraphqlDistributedGatewayModule implements OnModuleInit {
     const httpAdapter = this.httpAdapterHost.httpAdapter;
     const app = httpAdapter.getInstance();
 
-    // const path = this.getNormalizedPath(apolloOptions);
-
     const apolloServer = new ApolloServer({
       gateway,
       ...rest,

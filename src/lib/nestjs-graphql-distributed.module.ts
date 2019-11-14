@@ -3,14 +3,11 @@ import { DynamicModule, Inject, Module, OnModuleInit, Optional, Provider } from 
 import { loadPackage } from '@nestjs/common/utils/load-package.util';
 import { HttpAdapterHost } from '@nestjs/core';
 import { MetadataScanner } from '@nestjs/core/metadata-scanner';
-import { GqlModuleOptions } from '@nestjs/graphql';
 import {
   GqlModuleAsyncOptions,
   GqlOptionsFactory,
   GraphQLAstExplorer,
-  GraphQLFactory,
 } from '@nestjs/graphql';
-import { GraphQLSchemaBuilder } from '@nestjs/graphql/dist/graphql-schema-builder';
 import { GRAPHQL_MODULE_ID, GRAPHQL_MODULE_OPTIONS } from '@nestjs/graphql/dist/graphql.constants';
 import { DelegatesExplorerService } from '@nestjs/graphql/dist/services/delegates-explorer.service';
 import { ResolversExplorerService } from '@nestjs/graphql/dist/services/resolvers-explorer.service';
@@ -21,13 +18,14 @@ import { mergeDefaults } from '@nestjs/graphql/dist/utils/merge-defaults.util';
 import { ApolloServerBase } from 'apollo-server-core';
 
 import { GraphqlDistributedFactory } from './graphql-distributed.factory';
+import { FedGraphQLSchemaBuilder } from './graphql-schema-builder';
 import { GraphQLTypesLoader } from './graphql-types.loader';
+import { FedGqlModuleOptions } from './interfaces';
 import { ReferencesExplorerService } from './services';
 
 @Module({
   providers: [
     GraphqlDistributedFactory,
-    GraphQLFactory,
     MetadataScanner,
     ResolversExplorerService,
     DelegatesExplorerService,
@@ -35,12 +33,12 @@ import { ReferencesExplorerService } from './services';
     ReferencesExplorerService,
     GraphQLAstExplorer,
     GraphQLTypesLoader,
-    GraphQLSchemaBuilder,
+    FedGraphQLSchemaBuilder,
   ],
   exports: [GraphQLTypesLoader, GraphQLAstExplorer],
 })
 export class GraphqlDistributedModule implements OnModuleInit {
-  public static forRoot(options: GqlModuleOptions = {}): DynamicModule {
+  public static forRoot(options: FedGqlModuleOptions = {}): DynamicModule {
     options = mergeDefaults(options);
     return {
       module: GraphqlDistributedModule,
@@ -109,8 +107,7 @@ export class GraphqlDistributedModule implements OnModuleInit {
     @Optional()
     private readonly httpAdapterHost: HttpAdapterHost,
     @Inject(GRAPHQL_MODULE_OPTIONS)
-    private readonly options: GqlModuleOptions,
-    private readonly graphqlFactory: GraphQLFactory,
+    private readonly options: FedGqlModuleOptions,
     private readonly graphqlDistributedFactory: GraphqlDistributedFactory,
     private readonly graphqlTypesLoader: GraphQLTypesLoader,
   ) {}
@@ -137,7 +134,7 @@ export class GraphqlDistributedModule implements OnModuleInit {
     });
 
     if (this.options.definitions && this.options.definitions.path) {
-      await this.graphqlFactory.generateDefinitions(
+      await this.graphqlDistributedFactory.generateDefinitions(
         // @ts-ignore
         printSchema(apolloOptions.schema),
         this.options,

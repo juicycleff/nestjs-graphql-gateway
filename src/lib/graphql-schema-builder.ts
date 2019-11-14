@@ -5,10 +5,10 @@ import { loadPackage } from '@nestjs/common/utils/load-package.util';
 import { ScalarsExplorerService } from '@nestjs/graphql/dist/services/scalars-explorer.service';
 import { GraphQLSchema, specifiedDirectives } from 'graphql';
 import { BuildSchemaOptions } from './external/type-graphql.types';
-import { lazyMetadataStorage } from './storages/lazy-metadata.storage';
+import { lazyMetadataStorage } from '@nestjs/graphql/dist/storages/lazy-metadata.storage';
 
 @Injectable()
-export class GraphQLSchemaBuilder {
+export class FedGraphQLSchemaBuilder {
   constructor(
     private readonly scalarsExplorerService: ScalarsExplorerService,
   ) {}
@@ -19,17 +19,16 @@ export class GraphQLSchemaBuilder {
     resolvers: Function[],
   ): Promise<any> {
     lazyMetadataStorage.load();
-
-    const buildSchema = this.loadBuildSchemaFactory();
     const scalarsMap = this.scalarsExplorerService.getScalarsMap();
-    try {
+    const buildSchema = this.loadBuildSchemaFactory();
 
+    try {
       return await buildSchema({
         ...options,
-        directives: [...specifiedDirectives, ...federationDirectives, ...(options.directives || [])],
+        directives: [...specifiedDirectives, ...federationDirectives, ...(options && options.directives || [])],
         emitSchemaFile: autoSchemaFile !== true ? autoSchemaFile : false,
-        scalarsMap,
         validate: false,
+        scalarsMap,
         resolvers,
         skipCheck: true,
       });
