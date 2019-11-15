@@ -44,6 +44,25 @@ import { GraphqlDistributedModule } from 'nestjs-graphql-gateway';
   ]
 })
 export class AppModule {}
+
+
+// Code first TypegraphQl
+
+@Module({
+  imports: [
+    GraphqlDistributedModule.forRoot({
+      autoSchemaFile: 'graphs/demo.gql',
+      
+      // optional orphaned types
+      buildSchemaOptions: {
+        orphanedTypes: [Tenant, TenantMember, User],
+      },
+      
+      context: (ctx) => ctx,
+    })
+  ]
+})
+export class AppModule {}
 ```
 
 ## Setup Gateway
