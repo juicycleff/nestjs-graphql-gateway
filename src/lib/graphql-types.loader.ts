@@ -10,7 +10,7 @@ const readFile = util.promisify(fs.readFile);
 
 @Injectable()
 export class GraphQLTypesLoader {
-  public async mergeTypesByPaths(paths: string | string[]): Promise<DocumentNode> {
+  public async mergeTypesByPaths(paths: string | string[]): Promise<DocumentNode | string> {
     if (!paths || paths.length === 0) {
       return null;
     }
@@ -19,6 +19,7 @@ export class GraphQLTypesLoader {
     const flatTypes = flatten(types);
     // Temporary workaround: https://github.com/okgrow/merge-graphql-schemas/issues/155
     const tempType = 'type Query { temp__: Boolean }';
+
     return mergeTypes([...flatTypes, tempType], { all: true });
   }
 

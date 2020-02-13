@@ -1,6 +1,6 @@
 {
   "name": "nestjs-graphql-gateway",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "NestJS GraphQL Apollo Federation extension",
   "author": {
     "name": "Rex Isaac Raphael",
